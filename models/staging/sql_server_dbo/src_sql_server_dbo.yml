@@ -1,0 +1,238 @@
+version: 2
+
+sources:
+
+  - name: sql_server_dbo # name of the source 
+    schema: sql_server_dbo # this is the schema our raw data lives in
+    database: DEV_BRONZE_DB_ALUMNO25 # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    tables:
+      - name: addresses
+        description: "Tabla que contiene las direcciones de los usuarios"
+        columns:
+          - name: address_id
+            description: "Identificador de la direccion"
+            tests:
+              - unique
+              - not_null
+          - name: country
+            description: "Pais de la direccion"
+          - name: state
+            description: "Estado de la direccion"
+          - name: zipcode
+            description: "Codigo postal de la direccion"
+          - name: address
+            description: "Descripcion de la direccion"
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
+
+      - name: events
+        description: "Tabla de eventos ocurridos en la web"
+        columns:
+          - name: event_id
+            description: "Identificador del evento"
+            tests:
+              - unique
+              - not_null
+          - name: product_id
+            description: "Id de producto asociado al evento"
+            tests:
+              - dbt_utils.relationships_where:
+                  to: source('sql_server_dbo','products')
+                  field: product_id
+                  where: product_id <> NULL
+          - name: created_at
+            description: "Fecha y hora del evento"
+          - name: page_url
+            description: "URL donde ha ocurrido el evento"
+            tests:
+              - not_null
+          - name: event_type
+            description: "Tipo del evento"
+          - name: order_id
+            description: "Id del pedido generado, de haberlo"
+            tests:
+              - dbt_utils.relationships_where:
+                  to: source('sql_server_dbo','orders')
+                  field: order_id
+                  where: order_id <> NULL
+          - name: user_id
+            description: "Id del usuario que genera el evento"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','users')
+                  field: user_id
+          - name: session_id
+            description: ""
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
+
+      - name: order_items
+        description: "Tabla conteniendo todos los productos comprados en un pedido"
+        columns:
+          - name: order_id
+            description: "Id de la order donde se ha comprado el producto"
+            tests:
+              - not_null
+          - name: product_id
+            description: "Producto comprado en la order"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','products')
+                  field: product_id
+          - name: quantity
+            description: "Cantidad comprada del producto"
+            tests:
+            - dbt_utils.expression_is_true:
+                expression: '>0'
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
+
+      - name: orders
+        description: "Tabla con todos los pedidos"
+        columns:
+          - name: order_id
+            description: "Identificador del pedido"
+            tests:
+              - unique
+              - not_null
+              - relationships:
+                  to: source('sql_server_dbo','order_items')
+                  field: order_id
+          - name: delivered_at
+            description: "Fecha y hora a la que se entrego el pedido"
+          - name: order_cost
+            description: "Precio del pedido"
+            tests:
+            - dbt_utils.expression_is_true:
+                expression: '>0'
+          - name: shipping_service
+            description: "Servicio de envio usado"
+          - name: promo_id
+            description: "Id de la promocion usada"
+            tests:
+              - dbt_utils.relationships_where:
+                  to: source('sql_server_dbo','promos')
+                  field: promo_id
+                  where: promo_id <> NULL
+          - name: estimated_delivery_at
+            description: "Fecha y hora estimada de entrega"
+          - name: tracking_id
+            description: "Codigo del envio"
+          - name: shipping_cost
+            description: "Coste del envio"
+            tests:
+            - dbt_utils.expression_is_true:
+                expression: '>=0'
+          - name: address_id
+            description: "Id de la direccion de envio"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','addresses')
+                  field: address_id
+          - name: status
+            description: "Estado del envio"
+          - name: created_at
+            description: "Fecha y hora de creacion del pedido"
+          - name: order_total
+            description: "Precio total del pedido incluyendo el envio"
+            tests:
+            - dbt_utils.expression_is_true:
+                expression: '>0'
+          - name: user_id
+            description: "Id del usuario que hace el pedido"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','users')
+                  field: user_id
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
+
+      - name: products
+        description: "Tabla de los productos que se venden"
+        columns:
+          - name: product_id
+            description: "Identificador del producto"
+            tests:
+              - unique
+              - not_null
+          - name: inventory
+            description: "Cantidad de producto en mi inventario"
+            tests:
+            - not_null
+            - dbt_utils.expression_is_true:
+                expression: '>=0'
+          - name: price
+            description: "Precio del producto"
+            tests:
+            - not_null
+            - dbt_utils.expression_is_true:
+                expression: '>0'
+          - name: name
+            description: "Nombre del producto"
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
+
+      - name: promos
+        description: "Tabla de promociones"
+        columns:
+          - name: promo_id
+            description: "Identificador de la promocion"
+            tests:
+              - not_null
+          - name: discount
+            description: "Descuento que se aplica en esta promocion"
+          - name: status
+            description: "Estado de la promocion"
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
+
+      - name: users
+        description: "Tabla de los usuarios"
+        columns:
+          - name: user_id
+            description: "Identificador del usuario"
+            tests:
+              - unique
+              - not_null
+          - name: address_id
+            description: "Id de la direccion del usuario"
+            tests:
+              - relationships:
+                  to: source('sql_server_dbo','addresses')
+                  field: address_id
+          - name: first_name
+            description: "Nombre del usuario"
+          - name: email
+            description: "Email del usuario"
+          - name: created_at
+            description: "Fecha y hora de creacion del usuario"
+          - name: last_name
+            description: "Apellido del usuario"
+          - name: updated_at
+            description: "Fecha y hora de ultima actualizacion del usuario"
+          - name: phone_number
+            description: "Numero de telefono del usuario"
+          - name: total_orders
+            description: "Total de pedidos realizados por el usuario"
+          - name: _fivetran_deleted
+            description: ""
+          - name: _fivetran_synced
+            description: ""
