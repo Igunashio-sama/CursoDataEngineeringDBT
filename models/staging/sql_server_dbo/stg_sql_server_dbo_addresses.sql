@@ -5,8 +5,7 @@
     ) 
 }}
 
-with
-    src_sql_addresses as (
+with src_sql_addresses as (
         select * 
         from {{ source("sql_server_dbo", "addresses") }}
     ),

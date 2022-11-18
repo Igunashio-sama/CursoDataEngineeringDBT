@@ -6,8 +6,7 @@
     ) 
 }}
 
-with
-    src_sql_products as (
+with src_sql_products as (
         select * 
         from {{ source("sql_server_dbo", "products") }}
     ),

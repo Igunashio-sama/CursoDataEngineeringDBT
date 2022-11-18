@@ -5,8 +5,7 @@
     ) 
 }}
 
-with
-    src_sql_users as (
+with src_sql_users as (
         select * 
         from {{ source("sql_server_dbo", "users") }}
         ),

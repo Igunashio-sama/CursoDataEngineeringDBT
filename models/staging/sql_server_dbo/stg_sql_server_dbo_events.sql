@@ -20,7 +20,7 @@ with src_sql_events as (
             , event_type
             , page_url
             , created_at::date AS creation_date
-            ,created_at::time AS creation_time
+            , created_at::time AS creation_time
             , _fivetran_synced as date_load
             , _fivetran_deleted as is_deleted
         from src_sql_events
