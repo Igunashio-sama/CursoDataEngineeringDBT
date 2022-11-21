@@ -1,0 +1,110 @@
+version: 2
+
+models:
+  - name: stg_sql_server_dbo_addresses
+    description: ""
+    columns:
+      - name: address_id
+        description: ""
+      - name: address
+        description: ""
+      - name: zipcode
+        description: ""
+      - name: usa_state
+        description: ""
+      - name: date_load
+        description: ""
+      - name: is_deleted
+        description: ""
+
+  - name: stg_sql_server_dbo_events
+    description: ""
+    columns:
+      - name: event_id
+        description: ""
+      - name: user_id
+        description: ""
+      - name: product_id
+        description: ""
+      - name: order_id
+        description: ""
+      - name: session_id
+        description: ""
+      - name: event_type
+        description: ""
+      - name: page_url
+        description: ""
+      - name: creation_date
+        description: ""
+      - name: creation_time
+        description: ""
+      - name: date_load
+        description: ""
+      - name: is_deleted
+        description: ""
+
+  - name: stg_sql_server_dbo_orderitems
+    description: ""
+    columns:
+      - name: order_id
+        description: ""
+      - name: product_id
+        description: ""
+      - name: quantity
+        description: ""
+      - name: date_load
+        description: ""
+      - name: is_deleted
+        description: ""
+
+  - name: stg_sql_server_dbo_orders
+    description: ""
+    columns:
+      - name: order_id
+        description: ""
+      - name: promo_id
+        description: ""
+      - name: user_id
+        description: ""
+      - name: address_id
+        description: ""
+      - name: date_created
+        description: ""
+      - name: time_created
+        description: ""
+      - name: order_cost_usd
+        description: ""
+      - name: shipping_cost_usd
+        description: ""
+      - name: order_total_usd
+        description: ""
+      - name: shipping_service
+        description: ""
+      - name: estimated_delivery_at::date
+        description: ""
+      - name: delivery_date
+        description: ""
+      - name: delivery_time
+        description: ""
+      - name: status
+        description: ""
+      - name: date_load
+        description: ""
+      - name: is_deleted
+        description: ""
+
+  - name: stg_sql_server_dbo_products
+    description: ""
+    columns:
+      - name: product_id
+        description: ""
+      - name: name
+        description: ""
+      - name: price_usd
+        description: ""
+      - name: inventory
+        description: ""
+      - name: date_load
+        description: ""
+      - name: is_deleted
+        description: ""
