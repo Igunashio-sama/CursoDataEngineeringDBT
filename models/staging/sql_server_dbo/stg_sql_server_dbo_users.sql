@@ -18,8 +18,8 @@ with src_sql_users as (
             , last_name
             , email
             , phone_number
-            , created_at::date as creation_date
-            , updated_at::date as last_update
+            , year(created_at)*10000+month(created_at)*100+day(created_at) as id_date_created
+            , year(created_at)*10000+month(created_at)*100+day(created_at) as id_last_update
             , _fivetran_synced as date_load
             , _fivetran_deleted as is_deleted
         from src_sql_users

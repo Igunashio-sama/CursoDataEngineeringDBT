@@ -5,10 +5,10 @@ sources:
   - name: sql_server_dbo # name of the source 
     schema: sql_server_dbo # this is the schema our raw data lives in
     database: |  
-        {%- if  target.name == 'user_dev' -%} dev_bronze_db_alumnoadmin 
-        {%- elif target.name == 'ci' -%} dev_bronze_db_alumnoadmin 
-        {%- elif target.name == 'pro'-%} pro_bronze_db_alumnoadmin  
-        {%- else -%} {{target.database}}_bronze_db_alumnoadmin
+        {%- if  target.name == 'user_dev' -%} dev_bronze_db_alumno25
+        {%- elif target.name == 'ci' -%} dev_bronze_db_alumno25
+        {%- elif target.name == 'pro'-%} pro_bronze_db_alumno25
+        {%- else -%} {{target.database}}_bronze_db_alumno25
         {%- endif -%}
 
     quoting:
