@@ -1,0 +1,211 @@
+version: 2
+
+models:
+  - name: stg_sql_server_dbo_addresses
+    description: "Tabla con direcciones de usuarios y direcciones de envío"
+    columns:
+      - name: address_id
+        description: "Identificador de dirección"
+      - name: address
+        description: "Dirección completa"
+      - name: zipcode
+        description: "Código postal"
+      - name: state
+        description: "Estado de la dirección"
+      - name: country
+        description: "País de la dirección"
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
+
+  - name: stg_sql_server_dbo_date
+    description: "Tabla de fechas"
+    columns:
+      - name: fecha
+        description: "Fecha completa"
+      - name: id_date
+        description: "Identificador de la fecha"
+        tests:
+          - unique
+          - not_null
+      - name: id_anio_mes
+        description: "Identificador del mes y año"
+      - name: anio_semana_dia
+        description: "Identificador del dia de la semana del año"
+      - name: semana
+        description: "Semana del año"
+      - name: anio
+        description: "Año de la fecha"
+      - name: mes
+        description: "Mes de la fecha"
+      - name: desc_mes
+        description: "Nombre del mes de la fecha"
+        
+  - name: stg_sql_server_dbo_events
+    description: "Tabla de eventos ocurridos en la pagina web"
+    columns:
+      - name: event_id
+        description: "Identificador del evento"
+      - name: user_id
+        description: "Llave foranea del usuario que causó el evento"
+      - name: product_id
+        description: "Llave foranea del producto relacionado con el evento"
+      - name: order_id
+        description: "Llave foranea del pedido asociado al evento"
+      - name: session_id
+        description: "Identificador de la sesión a la que pertenece el evento"
+      - name: event_type
+        description: "Tipo del evento"
+      - name: page_url
+        description: "Url de la página donde se originó el evento"
+      - name: id_date_created
+        description: "Identificador de la fecha cuando se originó el evento"
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_date')
+              field: id_date
+      - name: time_created
+        description: "Fecha y tiempo cuando se originó el evento"
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
+        
+  - name: stg_sql_server_dbo_orderitems
+    description: "Tabla que describe el detalle de cada pedido incluyendo los productos incluidos en el mismo y la cantidad de ellos comprados"
+    columns:
+      - name: order_id
+        description: "Llave foranea del pedido"
+      - name: product_id
+        description: "Llave foranea del producto"
+      - name: quantity
+        description: "Cantidad del producto comprada en el pedido"
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
+        
+  - name: stg_sql_server_dbo_orders
+    description: "Tabla de pedidos"
+    columns:
+      - name: order_id
+        description: "Identificador del pedido"
+      - name: promo_id
+        description: "Llave foranea de la promoción aplicada al pedido"
+        tests:
+          - dbt_utils.relationships_where:
+                  to: ref('stg_sql_server_dbo_promos')
+                  field: promo_id
+                  where: promo_id <> NULL
+      - name: user_id
+        description: "Llave foranea del usuario que ha realizado el pedido"
+      - name: address_id
+        description: "Llave foranea de la dirección de envío del pedido"
+      - name: id_date_created
+        description: "Llave foranea de la fecha en la que se creó el pedido"
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_date')
+              field: id_date
+      - name: time_created
+        description: "Fecha y tiempo de creación del pedido"
+      - name: order_cost_usd
+        description: "Precio de los artículos del pedido en USD"
+      - name: shipping_cost_usd
+        description: "Precio de envío del pedido en USD"
+      - name: order_total_usd
+        description: "Precio total del pedido en USD"
+      - name: shipping_service
+        description: "Servicio de envío usado"
+      - name: tracking_id
+        description: "Codigo de seguimiento del pedido"
+      - name: estimated_delivery_at_id
+        description: "Llave foranea de la fecha estimada de recepción del pedido"
+        tests:
+          - dbt_utils.relationships_where:
+                  to: ref('stg_sql_server_dbo_date')
+                  field: date_id
+                  where: date_id <> NULL
+      - name: delivery_date_id
+        description: "Llave foranea de la fecha de recepción del pedido"
+        tests:
+          - dbt_utils.relationships_where:
+                  to: ref('stg_sql_server_dbo_date')
+                  field: date_id
+                  where: date_id <> NULL
+      - name: delivery_time
+        description: "Fecha y tiempo de recepción del pedido"
+      - name: status
+        description: "Estado del pedido"
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
+        
+  - name: stg_sql_server_dbo_products
+    description: "Tabla con la información de los productos"
+    columns:
+      - name: product_id
+        description: "Identificador del producto"
+      - name: name
+        description: "Nombre del producto"
+      - name: price_usd
+        description: "Precio del producto en USD"
+      - name: inventory
+        description: "Número de articulos del producto en el inventario"
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
+        
+  - name: stg_sql_server_dbo_promos
+    description: "Tabla con la información de las promociones"
+    columns:
+      - name: promo_id
+        description: "Identificador de la promoción"
+        tests:
+          - unique
+          - not_null
+      - name: promo_name
+        description: "Nombre de la promoción"
+      - name: discount_USD
+        description: "Cantidad en USD que se descuenta del pedido al que se le aplica esta promoción"
+      - name: status
+        description: "Estado de la promoción"
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
+        
+  - name: stg_sql_server_dbo_users
+    description: "Tabla de información de los usuarios"
+    columns:
+      - name: user_id
+        description: "Identificador del usuario"
+      - name: address_id
+        description: "Llave foranea de la dirección del usuario"
+      - name: first_name
+        description: "Nombre del usuario"
+      - name: last_name
+        description: "Apellido del usuario"
+      - name: email
+        description: "Correo electrónico del usuario"
+      - name: phone_number
+        description: "Número de teléfono del usuario"
+      - name: id_date_created
+        description: "Llave foranea de la fecha de creación del usuario"
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_date')
+              field: id_date
+      - name: id_last_update
+        description: "Llave foranea de la fecha de la última actualización del usuario"
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_date')
+              field: id_date
+      - name: date_load
+        description: "Fecha de carga"
+      - name: is_deleted
+        description: "Flag de borrado"
