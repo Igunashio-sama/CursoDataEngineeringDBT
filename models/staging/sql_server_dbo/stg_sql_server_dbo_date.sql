@@ -17,15 +17,14 @@ with date as (
 
 
 select
-      date_day as fecha_forecast
+      date_day as fecha
     , year(date_day)*10000+month(date_day)*100+day(date_day) as id_date
-    , year(date_day) as anio
-    , month(date_day) as mes
-    ,monthname(date_day) as desc_mes
     , year(date_day)*100+month(date_day) as id_anio_mes
-    , date_day-1 as dia_previo
     , year(date_day)||weekiso(date_day)||dayofweek(date_day) as anio_semana_dia
     , weekiso(date_day) as semana
+    , year(date_day) as anio
+    , month(date_day) as mes
+    , monthname(date_day) as desc_mes
 from date
 order by
     date_day desc

@@ -30,7 +30,7 @@ sources:
             tests:
               - not_null
               - relationships:
-                  to: source('sql_server_db','products')
+                  to: source('sql_server_dbo','products')
                   field: product_id
           - name: quantity
           - name: month

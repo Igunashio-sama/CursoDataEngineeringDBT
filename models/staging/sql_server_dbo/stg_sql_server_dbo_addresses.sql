@@ -15,7 +15,8 @@ with src_sql_addresses as (
             address_id
             , address
             , zipcode
-            , state AS USA_State
+            , state
+            , country
             , _fivetran_synced as date_load
             , _fivetran_deleted as is_deleted
         from src_sql_addresses

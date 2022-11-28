@@ -14,7 +14,7 @@ with src_sql_promos as (
         select
             md5(trim(promo_id)) as promo_id
             , trim(promo_id) as promo_name
-            , discount
+            , discount as discount_USD
             , status
             , _fivetran_synced as date_load
             , _fivetran_deleted as is_deleted

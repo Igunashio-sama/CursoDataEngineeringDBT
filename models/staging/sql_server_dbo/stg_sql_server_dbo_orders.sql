@@ -27,9 +27,10 @@ with src_sql_orders as (
             , shipping_cost as shipping_cost_USD
             , order_total as order_total_USD
             , shipping_service
-            , estimated_delivery_at::date as estimated_delivery_at
-            , delivered_at::date as delivery_date
-            , delivered_at::time as delivery_time
+            , tracking_id
+            , year(estimated_delivery_at)*10000+month(estimated_delivery_at)*100+day(estimated_delivery_at) as estimated_delivery_at_id
+            , year(delivered_at)*10000+month(delivered_at)*100+day(delivered_at) as delivery_date_id
+            , delivered_at as delivery_time
             , status
             , _fivetran_synced as date_load
             , _fivetran_deleted as is_deleted
