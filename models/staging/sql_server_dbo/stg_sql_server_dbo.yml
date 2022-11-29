@@ -125,15 +125,15 @@ models:
         tests:
           - dbt_utils.relationships_where:
                   to: ref('stg_sql_server_dbo_date')
-                  field: date_id
-                  where: date_id <> NULL
+                  field: id_date
+                  where: estimated_delivery_at_id <> NULL
       - name: delivery_date_id
         description: "Llave foranea de la fecha de recepción del pedido"
         tests:
           - dbt_utils.relationships_where:
                   to: ref('stg_sql_server_dbo_date')
-                  field: date_id
-                  where: date_id <> NULL
+                  field: id_date
+                  where: delivery_date_id <> NULL
       - name: delivery_time
         description: "Fecha y tiempo de recepción del pedido"
       - name: status
