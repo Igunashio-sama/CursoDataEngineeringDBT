@@ -20,20 +20,35 @@ sources:
     tables:
 
       - name: budget
-        loaded_at_field: _fivetran_synced
         columns:
           - name: _row
+            description: "Número de la fila del presupuesto en la hoja de cálculo"
             tests:
               - unique
               - not_null
           - name: product_id
+            description: "Producto sobre el que se define el presupuesto"
             tests:
               - not_null
               - relationships:
                   to: source('sql_server_dbo','products')
                   field: product_id
           - name: quantity
-          - name: month
+            description: "Cantidad de producto definida en el presupuesto"
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type:
+                  column_type: number
+              - dbt_utils.expression_is_true:
+                  expression: '>=0'
+          - name: month
+            description: "Mes para el que se define el presupuesto"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [date, datetime, timestamp]
           - name: _fivetran_synced
+            description: "Fechay hora de carga del dato"
+            tests:
+                - dbt_expectations.expect_column_values_to_be_in_type_list:
+                    column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
