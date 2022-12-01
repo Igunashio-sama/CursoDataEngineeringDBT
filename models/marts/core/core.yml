@@ -1,0 +1,32 @@
+version: 2
+
+models:
+  - name: dim_addresses
+    description: ""
+    columns:
+      - name: address_id
+        description: ""
+      - name: address
+        description: ""
+      - name: zipcode
+        description: ""
+      - name: state
+        description: ""
+      - name: country
+        description: ""
+      - name: date_load
+        description: ""
+
+  - name: dim_promos
+    description: ""
+    columns:
+      - name: promo_id
+        description: ""
+      - name: promo_name
+        description: ""
+      - name: discount_usd
+        description: ""
+      - name: status
+        description: ""
+      - name: date_load
+        description: ""
