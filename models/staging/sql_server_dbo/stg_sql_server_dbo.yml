@@ -24,7 +24,7 @@ models:
     columns:
       - name: fecha
         description: "Fecha completa"
-      - name: id_date
+      - name: date_id
         description: "Identificador de la fecha"
         tests:
           - unique
@@ -64,7 +64,7 @@ models:
         tests:
           - relationships:
               to: ref('stg_sql_server_dbo_date')
-              field: id_date
+              field: date_id
       - name: time_created
         description: "Fecha y tiempo cuando se originó el evento"
       - name: date_load
@@ -107,7 +107,7 @@ models:
         tests:
           - relationships:
               to: ref('stg_sql_server_dbo_date')
-              field: id_date
+              field: date_id
       - name: time_created
         description: "Fecha y tiempo de creación del pedido"
       - name: order_cost_usd
@@ -125,14 +125,14 @@ models:
         tests:
           - dbt_utils.relationships_where:
                   to: ref('stg_sql_server_dbo_date')
-                  field: id_date
+                  field: date_id
                   where: estimated_delivery_at_id <> NULL
       - name: delivery_date_id
         description: "Llave foranea de la fecha de recepción del pedido"
         tests:
           - dbt_utils.relationships_where:
                   to: ref('stg_sql_server_dbo_date')
-                  field: id_date
+                  field: date_id
                   where: delivery_date_id <> NULL
       - name: delivery_time
         description: "Fecha y tiempo de recepción del pedido"
@@ -198,13 +198,13 @@ models:
         tests:
           - relationships:
               to: ref('stg_sql_server_dbo_date')
-              field: id_date
+              field: date_id
       - name: id_last_update
         description: "Llave foranea de la fecha de la última actualización del usuario"
         tests:
           - relationships:
               to: ref('stg_sql_server_dbo_date')
-              field: id_date
+              field: date_id
       - name: date_load
         description: "Fecha de carga"
       - name: is_deleted

@@ -2,31 +2,163 @@ version: 2
 
 models:
   - name: dim_addresses
-    description: ""
+    description: "Tabla de dimensión de direcciones, pudiendo referirse a direcciones de clientes o direcciones de envío"
     columns:
       - name: address_id
-        description: ""
+        description: "Clave primaria de la tabla de direcciones"
       - name: address
-        description: ""
+        description: "Texto completo de la dirección"
       - name: zipcode
-        description: ""
+        description: "Código postal de la dirección"
       - name: state
-        description: ""
+        description: "Estado de la dirección"
       - name: country
-        description: ""
+        description: "País de la dirección"
       - name: date_load
-        description: ""
+        description: "Fecha de ingesta de la dirección"
+
+  - name: dim_date
+    description: "Dimensión de fechas del modelo con granularidad a nivel de dias"
+    columns:
+      - name: date_id
+        description: "Clave primaria de la tabla de fechas"
+      - name: date
+        description: "Fecha completa"
+      - name: month_year_id
+        description: "Clave foranea del mes/año de la fecha"
+        tests:
+          - relationships:
+              to: ref('dim_month_year')
+              field: month_year_id
+      - name: day_week_year
+        description: "Dia de la semana del año de la fecha"
+      - name: week
+        description: "Número de la semana de la fecha en el año"
+
+  - name: dim_month_year
+    description: "Dimensión de fechas del modelo con granularidad a nivel de mes"
+    columns:
+      - name: month_year_id
+        description: "Clave primaria del mes/año"
+      - name: year
+        description: "Año de la fecha"
+      - name: month
+        description: "Mes de la fecha"
+      - name: month_name
+        description: "Nombre del mes"
+
+  - name: dim_products
+    description: "Tabla de dimensión de producto"
+    columns:
+      - name: product_id
+        description: "Clave primaria del producto"
+      - name: name
+        description: "Nombre del producto"
+      - name: price_usd
+        description: "Precio en dolares de una unidad del producto"
+      - name: inventory
+        description: "Cantidad de producto disponible actualmente en el inventario"
+      - name: date_load
+        description: "Fecha de ingesta del producto"
+
+  - name: fct_budget
+    description: "Tabla de hechos de presupuestos mensuales de productos"
+    columns:
+      - name: budget_id
+        description: "Clave primaria de la tabla de presupuestos"
+      - name: month_year_id
+        description: "Clave foranea del mes para el que se presupuesta"
+        tests:
+          - relationships:
+              to: ref('dim_month_year')
+              field: month_year_id
+      - name: product_id
+        description: "Clave foranea del producto presupuestado"
+      - name: quantity
+        description: "Cantidad presupuestada del producto"
+      - name: date_load
+        description: "Fecha de la ingesta del presupuesto"
+
+  - name: fct_order_details
+    description: "Tabla de hechos de los detalles de los pedidos"
+    columns:
+      - name: order_details_id
+        description: "Clave primaria del detalle del pedido"
+      - name: order_id
+        description: "Identificador del pedido al que pertenece el detalle"
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_orders')
+              field: order_id
+      - name: product_id
+        description: "Clave foranea del producto comprado"
+        tests:
+          - relationships:
+              to: ref('stg_sql_server_dbo_products')
+              field: product_id
+      - name: user_id
+        description: "Clave foranea del usuario que compra el producto"
+      - name: address_id
+        description: "Clave foranea de la dirección de envio del pedido"
+      - name: promo_id
+        description: "Clave foranea de la promoción aplicada al pedido"
+      - name: id_date_created
+        description: "Clave foranea de la fecha de creación del pedido"
+      - name: estimated_delivery_at_id
+        description: "Clave foranea de la fecha estimada de llegada del pedido"
+      - name: delivery_date_id
+        description: "Clave foranea de la fecha de llegada del pedido"
+      - name: time_created
+        description: "Hora de creación del pedido"
+      - name: delivery_time
+        description: "Hora de llegada del pedido"
+      - name: shipping_service
+        description: "Servicio postal usado para el envío"
+      - name: tracking_id
+        description: "Código de seguimiento del pedido"
+      - name: status
+        description: "Estado del pedido"
+      - name: quantity
+        description: "Cantidad del producto referenciado en product_id comprada en el pedido"
+      - name: shipping_cost_usd
+        description: "Coste de envío en USD"
+      - name: order_total_usd
+        description: "Coste total del pedido en USD"
 
   - name: dim_promos
-    description: ""
+    description: "Tabla de dimensión de promociones del modelo"
     columns:
       - name: promo_id
-        description: ""
+        description: "Clave primaria de la promoción"
+        tests:
+          - unique
       - name: promo_name
-        description: ""
+        description: "Nombre de la promoción"
       - name: discount_usd
-        description: ""
+        description: "Descuento aplicado con la promoción en dólares"
       - name: status
-        description: ""
+        description: "Estado de la promoción"
       - name: date_load
-        description: ""
+        description: "Fecha de ingesta de la promoción"
+
+  - name: dim_users
+    description: "Tabla de dimensión de los usuarios"
+    columns:
+      - name: user_id
+        description: "Clave primaria del usuario"
+      - name: address_id
+        description: "Clave foranea de la dirección del usuario"
+      - name: first_name
+        description: "Nombre del usuario"
+      - name: last_name
+        description: "Apellido del usuario"
+      - name: email
+        description: "Correo electrónico del usuario"
+      - name: phone_number
+        description: "Número de teléfono del usuario"
+      - name: id_date_created
+        description: "Clave foranea de la fecha de creación del registro del usuario"
+      - name: id_last_update
+        description: "Clave foranea de la última fecha de actualización del usuario"
+      - name: date_load
+        description: "Fecha de ingesta del usuario"
