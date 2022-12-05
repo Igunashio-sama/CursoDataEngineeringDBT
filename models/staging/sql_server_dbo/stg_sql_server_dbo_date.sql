@@ -18,7 +18,7 @@ select
       date_day as fecha
     , year(date_day)*10000+month(date_day)*100+day(date_day) as date_id
     , year(date_day)*100+month(date_day) as id_anio_mes
-    , year(date_day)||weekiso(date_day)||dayofweek(date_day) as anio_semana_dia
+    , (year(date_day)||weekiso(date_day)||dayofweek(date_day))::INT as anio_semana_dia
     , weekiso(date_day) as semana
     , year(date_day) as anio
     , month(date_day) as mes

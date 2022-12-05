@@ -22,8 +22,18 @@ models:
     columns:
       - name: date_id
         description: "Clave primaria de la tabla de fechas"
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: number
       - name: date
         description: "Fecha completa"
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: date
       - name: month_year_id
         description: "Clave foranea del mes/año de la fecha"
         tests:
@@ -32,18 +42,39 @@ models:
               field: month_year_id
       - name: day_week_year
         description: "Dia de la semana del año de la fecha"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: number
       - name: week
         description: "Número de la semana de la fecha en el año"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: number
 
   - name: dim_month_year
     description: "Dimensión de fechas del modelo con granularidad a nivel de mes"
     columns:
       - name: month_year_id
         description: "Clave primaria del mes/año"
+        tests:
+          - unique
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: number
       - name: year
         description: "Año de la fecha"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: number
       - name: month
         description: "Mes de la fecha"
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type:
+                column_type: number
       - name: month_name
         description: "Nombre del mes"
 
@@ -69,6 +100,7 @@ models:
       - name: month_year_id
         description: "Clave foranea del mes para el que se presupuesta"
         tests:
+          - not_null
           - relationships:
               to: ref('dim_month_year')
               field: month_year_id
@@ -87,21 +119,34 @@ models:
       - name: order_id
         description: "Identificador del pedido al que pertenece el detalle"
         tests:
-          - relationships:
-              to: ref('stg_sql_server_dbo_orders')
-              field: order_id
+          - not_null
       - name: product_id
         description: "Clave foranea del producto comprado"
         tests:
+          - not_null
           - relationships:
-              to: ref('stg_sql_server_dbo_products')
+              to: ref('dim_products')
               field: product_id
       - name: user_id
         description: "Clave foranea del usuario que compra el producto"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_users')
+              field: user_id
       - name: address_id
         description: "Clave foranea de la dirección de envio del pedido"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_addresses')
+              field: address_id
       - name: promo_id
         description: "Clave foranea de la promoción aplicada al pedido"
+        tests:
+          - relationships:
+              to: ref('dim_promos')
+              field: promo_id
       - name: id_date_created
         description: "Clave foranea de la fecha de creación del pedido"
       - name: estimated_delivery_at_id
@@ -132,6 +177,7 @@ models:
         description: "Clave primaria de la promoción"
         tests:
           - unique
+          - not_null
       - name: promo_name
         description: "Nombre de la promoción"
       - name: discount_usd
@@ -162,3 +208,25 @@ models:
         description: "Clave foranea de la última fecha de actualización del usuario"
       - name: date_load
         description: "Fecha de ingesta del usuario"
+  
+  - name: fct_events
+    description: "Tabla de hechos de los eventos de la página web"
+    columns:
+      - name: event_id
+        description: "Clave primaria del evento"
+      - name: user_id
+        description: "Clave foranea del usuario que causó el evento"
+      - name: product_id
+        description: "Clave foranea del producto relacionado con el evento"
+      - name: session_id
+        description: "Identificador de la sesión a la que pertenece el evento"
+      - name: event_type
+        description: "Tipo del evento"
+      - name: page_url
+        description: "URL de la pagina donde se originó el evento"
+      - name: id_date_created
+        description: "Clave foranea de la fecha de creación del evento"
+      - name: time_created
+        description: "Fecha y hora de creación del evento"
+      - name: date_load
+        description: "Fecha y hora de ingesta del evento"

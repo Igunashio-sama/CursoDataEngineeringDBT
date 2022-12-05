@@ -24,6 +24,9 @@ models:
     columns:
       - name: fecha
         description: "Fecha completa"
+        tests:
+          - unique
+          - not_null
       - name: date_id
         description: "Identificador de la fecha"
         tests:

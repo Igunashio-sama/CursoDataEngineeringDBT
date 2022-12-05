@@ -68,6 +68,12 @@ sources:
               - not_null
           - name: event_type
             description: "Tipo del evento"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  value_set: ['checkout', 'package_shipped', 'add_to_cart','page_view']
           - name: order_id
             description: "Id del pedido generado, de haberlo"
             tests:
@@ -174,6 +180,9 @@ sources:
                   field: address_id
           - name: status
             description: "Estado del envio"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  value_set: ['shipped', 'preparing', 'delivered']
           - name: created_at
             description: "Fecha y hora de creacion del pedido"
             tests:
@@ -251,6 +260,9 @@ sources:
                     column_type_list: [number, float]
           - name: status
             description: "Estado de la promocion"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  value_set: ['active', 'inactive']
           - name: _fivetran_deleted
             description: ""
           - name: _fivetran_synced
