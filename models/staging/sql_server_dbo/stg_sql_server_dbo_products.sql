@@ -1,8 +1,7 @@
 
 {{ 
     config(
-        materialized="incremental", 
-        unique_key="product_id"
+        materialized="table"
     ) 
 }}
 
@@ -24,6 +23,3 @@ with src_sql_products as (
 
 select *
 from renamed_casted
-{% if is_incremental() %}
-where date_load > (select max(date_load) from {{ this }})
-{% endif %}

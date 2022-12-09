@@ -37,6 +37,9 @@ sources:
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
 
       - name: events
         description: "Tabla de eventos ocurridos en la web"
@@ -55,12 +58,22 @@ sources:
                   where: product_id <> NULL
           - name: created_at
             description: "Fecha y hora del evento"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
           - name: page_url
             description: "URL donde ha ocurrido el evento"
             tests:
               - not_null
           - name: event_type
             description: "Tipo del evento"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  value_set: ['checkout', 'package_shipped', 'add_to_cart','page_view']
           - name: order_id
             description: "Id del pedido generado, de haberlo"
             tests:
@@ -80,6 +93,9 @@ sources:
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
 
       - name: order_items
         description: "Tabla conteniendo todos los productos comprados en un pedido"
@@ -97,12 +113,17 @@ sources:
           - name: quantity
             description: "Cantidad comprada del producto"
             tests:
-            - dbt_utils.expression_is_true:
-                expression: '>0'
+              - dbt_expectations.expect_column_values_to_be_of_type:
+                    column_type: number
+              - dbt_utils.expression_is_true:
+                  expression: '>0'
           - name: _fivetran_deleted
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
 
       - name: orders
         description: "Tabla con todos los pedidos"
@@ -117,11 +138,17 @@ sources:
                   field: order_id
           - name: delivered_at
             description: "Fecha y hora a la que se entrego el pedido"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
           - name: order_cost
             description: "Precio del pedido"
             tests:
-            - dbt_utils.expression_is_true:
-                expression: '>0'
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                    column_type_list: [number, float]
+              - dbt_utils.expression_is_true:
+                  expression: '>0'
           - name: shipping_service
             description: "Servicio de envio usado"
           - name: promo_id
@@ -133,13 +160,18 @@ sources:
                   where: promo_id <> NULL
           - name: estimated_delivery_at
             description: "Fecha y hora estimada de entrega"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
           - name: tracking_id
             description: "Codigo del envio"
           - name: shipping_cost
             description: "Coste del envio"
             tests:
-            - dbt_utils.expression_is_true:
-                expression: '>=0'
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                    column_type_list: [number, float]
+              - dbt_utils.expression_is_true:
+                  expression: '>=0'
           - name: address_id
             description: "Id de la direccion de envio"
             tests:
@@ -148,13 +180,21 @@ sources:
                   field: address_id
           - name: status
             description: "Estado del envio"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  value_set: ['shipped', 'preparing', 'delivered']
           - name: created_at
             description: "Fecha y hora de creacion del pedido"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
           - name: order_total
             description: "Precio total del pedido incluyendo el envio"
             tests:
-            - dbt_utils.expression_is_true:
-                expression: '>0'
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                    column_type_list: [number, float]
+              - dbt_utils.expression_is_true:
+                  expression: '>0'
           - name: user_id
             description: "Id del usuario que hace el pedido"
             tests:
@@ -165,6 +205,9 @@ sources:
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
 
       - name: products
         description: "Tabla de los productos que se venden"
@@ -178,20 +221,30 @@ sources:
             description: "Cantidad de producto en mi inventario"
             tests:
             - not_null
+            - dbt_expectations.expect_column_values_to_be_of_type:
+                  column_type: number
             - dbt_utils.expression_is_true:
                 expression: '>=0'
           - name: price
             description: "Precio del producto"
             tests:
             - not_null
+            - dbt_expectations.expect_column_values_to_be_in_type_list:
+                    column_type_list: [number, float]
             - dbt_utils.expression_is_true:
                 expression: '>0'
           - name: name
             description: "Nombre del producto"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
           - name: _fivetran_deleted
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
 
       - name: promos
         description: "Tabla de promociones"
@@ -202,12 +255,21 @@ sources:
               - not_null
           - name: discount
             description: "Descuento que se aplica en esta promocion"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                    column_type_list: [number, float]
           - name: status
             description: "Estado de la promocion"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_set:
+                  value_set: ['active', 'inactive']
           - name: _fivetran_deleted
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
 
       - name: users
         description: "Tabla de los usuarios"
@@ -225,19 +287,43 @@ sources:
                   field: address_id
           - name: first_name
             description: "Nombre del usuario"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
           - name: email
             description: "Email del usuario"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
           - name: created_at
             description: "Fecha y hora de creacion del usuario"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
           - name: last_name
             description: "Apellido del usuario"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
           - name: updated_at
             description: "Fecha y hora de ultima actualizacion del usuario"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
           - name: phone_number
             description: "Numero de telefono del usuario"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [varchar, string]
           - name: total_orders
             description: "Total de pedidos realizados por el usuario"
           - name: _fivetran_deleted
             description: ""
           - name: _fivetran_synced
             description: ""
+            tests:
+              - dbt_expectations.expect_column_values_to_be_in_type_list:
+                  column_type_list: [datetime, timestamp, timestamp_ntz, timestamp_tz]
