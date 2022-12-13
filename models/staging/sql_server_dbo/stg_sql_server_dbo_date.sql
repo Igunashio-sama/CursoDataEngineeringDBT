@@ -1,6 +1,6 @@
 {{ 
     config(
-        materialized='ephemeral',
+        materialized='table',
         pre_hook="alter session set timezone = 'Europe/Madrid'; alter session set week_start = 7;" 
         ) }}
 

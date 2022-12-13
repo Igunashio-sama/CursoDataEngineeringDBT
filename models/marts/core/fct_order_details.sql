@@ -1,7 +1,9 @@
 
 {{
     config(
-        materialized='table'
+        materialized='incremental',
+        unique_key='order_details_id',
+        on_schema_change='fail'
     )
 }}
 
@@ -34,6 +36,7 @@ renamed_casted AS (
         , quantity
         , shipping_cost_USD
         , order_total_USD
+        , B.date_load
     FROM stg_orders A
     JOIN stg_orderitems B
     ON A.order_id = B.order_id
@@ -41,3 +44,7 @@ renamed_casted AS (
 )
 
 SELECT * FROM renamed_casted
+
+{% if is_incremental() %}
+where date_load > (select max(date_load) from {{ this }})
+{% endif %}

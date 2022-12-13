@@ -1,7 +1,9 @@
 
 {{ 
     config(
-        materialized="table", 
+        materialized='incremental',
+        unique_key='user_id',
+        on_schema_change='fail'
     ) 
 }}
 
@@ -26,3 +28,7 @@ WITH stg_sql_users AS (
 
 select *
 from renamed_casted
+
+{% if is_incremental() %}
+where date_load > (select max(date_load) from {{ this }})
+{% endif %}

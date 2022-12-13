@@ -1,9 +1,6 @@
 {{ 
     config(
-        materialized='incremental',
-        unique_key='order_id',
-        on_schema_change='fail'
-
+        materialized='view'
     ) 
 }}
 
@@ -39,7 +36,3 @@ with src_sql_orders as (
 
 select *
 from renamed_casted
-
-{% if is_incremental() %}
-where date_load > (select max(date_load) from {{ this }})
-{% endif %}
