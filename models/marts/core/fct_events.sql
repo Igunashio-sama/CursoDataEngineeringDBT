@@ -1,6 +1,8 @@
 {{ 
     config(
-        materialized='table'
+        materialized='incremental',
+        unique_key='event_id',
+        on_schema_change='fail'
     ) 
 }}
 
@@ -25,3 +27,7 @@ WITH stg_sql_events AS (
 
 SELECT *
 FROM renamed_casted
+
+{% if is_incremental() %}
+where date_load > (select max(date_load) from {{ this }})
+{% endif %}
